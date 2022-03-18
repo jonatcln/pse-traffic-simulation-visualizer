@@ -2,32 +2,56 @@
 from typing import NamedTuple, Tuple
 import sys
 import ast
-import pygame
+import argparse
+import contextlib
+with contextlib.redirect_stdout(None):  # Hides pygame welcome message
+    import pygame
 
 
 # Configuration constants
 INITIAL_WINDOW_WIDTH = 800
 INITIAL_WINDOW_HEIGHT = 200
-SIMULATION_PLAYBACK_RATE = 4
 
 
 def main():
+    cli = argparse.ArgumentParser(
+        prog='visualize.py',
+        description='Traffic Simulation Visualizer',
+    )
+
+    def speed(s: str):
+        """Parse a valid speed int from a string."""
+        speed = int(s)
+        if speed < 1: raise argparse.ArgumentTypeError("speed must be >= 1")
+        return speed
+
+    cli.add_argument(
+        '-s', '--speed', type=speed, default=4,
+        help='set the playback rate to the given factor (>= 1)',
+    )
+
+    cli.add_argument(
+        '--dark', action='store_true',
+        help='use dark mode',
+    )
+
+    args = cli.parse_args()
+
     visualizer = Visualizer(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT)
+    visualizer.set_playback_rate(args.speed)
 
-    visualizer.set_playback_rate(SIMULATION_PLAYBACK_RATE)
-
-    # Uncomment the lines below for a dark theme, or use it as an example to
-    # set your own colors
-    #visualizer.set_colors(Visualizer.Colors(
-    #    background = Color(0, 0, 0),
-    #    text = Color(255, 255, 255),
-    #    road = Color(55, 55, 55),
-    #    car = Color(215, 215, 215),
-    #    generator = Color(140, 0, 140),
-    #    deceleration_range = Color(55, 75, 113),
-    #    stopping_range_full = Color(119, 25, 25),
-    #    stopping_range_half = Color(113, 73, 0),
-    #))
+    if args.dark:
+        # You can adjust these colors to get a custom theme
+        visualizer.set_colors(Visualizer.Colors(
+            background = Color(0, 0, 0),
+            text = Color(255, 255, 255),
+            road = Color(55, 55, 55),
+            car = Color(215, 215, 215),
+            generator = Color(140, 0, 140),
+            deceleration_range = Color(55, 75, 113),
+            stopping_range_full = Color(119, 25, 25),
+            stopping_range_half = Color(113, 73, 0),
+        ))
 
     for line in sys.stdin.readlines():
         visualizer.push_simulation_frame_data(line)

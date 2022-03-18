@@ -30,8 +30,22 @@ command to pipe the output of your simulation to the visualizer (assuming
 ./trafficsimulation | python3 visualize.py
 ```
 
-You can configure the initial window dimensions, playback rate, colors, etc. at
-the top of the script.
+Use `--help` to get an overview of all available options:
+
+```
+usage: visualize.py [-h] [-s SPEED] [--dark]
+
+Traffic Simulation Visualizer
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SPEED, --speed SPEED
+                        set the playback rate to the given factor (>= 1)
+  --dark                use dark mode
+```
+
+Additional settings can be configured in the script (initial window dimensions,
+custom colors, etc.).
 
 ## Data format
 
