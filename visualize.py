@@ -23,7 +23,10 @@ def main():
     #    text = Color(255, 255, 255),
     #    road = Color(55, 55, 55),
     #    car = Color(215, 215, 215),
-    #    generator = Color(140, 0, 140)
+    #    generator = Color(140, 0, 140),
+    #    deceleration_range = Color(55, 75, 113),
+    #    stopping_range_full = Color(119, 25, 25),
+    #    stopping_range_half = Color(113, 73, 0),
     #))
 
     for line in sys.stdin.readlines():
@@ -75,6 +78,9 @@ class Visualizer:
         traffic_light_green: Color = Color(0, 255, 0)
         traffic_light_red: Color = Color(255, 0, 0)
         generator: Color = Color(255, 100, 255)
+        deceleration_range: Color = Color(155, 175, 213)
+        stopping_range_full: Color = Color(219, 125, 125)
+        stopping_range_half: Color = Color(213, 173, 99)
 
     _FPS: int = 60
     _DEFAULT_PLAYBACK_RATE: int = 1
@@ -195,6 +201,13 @@ class Visualizer:
                 int(self._get_light_stop_line_thickness()*horizontal_scale)
             )
             is_green = bool(light['green'])
+            if 'xs' in light and 'xs0' in light and not is_green:
+                deceleration_distance = int(light['xs']) * horizontal_scale
+                stopping_distance = int(light['xs0']) * horizontal_scale
+                self._draw_indicators(
+                    window, light_x, road_y,
+                    int(deceleration_distance), int(stopping_distance)
+                )
             self._draw_traffic_light(
                 window, light_x, road_y, stop_line_thickness, is_green)
 
@@ -251,6 +264,33 @@ class Visualizer:
         radius = self._get_light_radius()
         center_y = road_center_y + road_height//2 + light_offset + radius
         pygame.draw.circle(window, color, (center_x, center_y), radius)
+
+    def _draw_indicators(
+        self, window, light_x: int, road_y: int, deceleration_distance: int,
+        stopping_distance: int
+    ):
+        origin_y = road_y - self._get_road_height()//2
+        pygame.draw.rect(
+            window, self._colors.deceleration_range.as_tuple(),
+            pygame.Rect(
+                light_x - deceleration_distance, origin_y,
+                deceleration_distance, self._get_road_height()
+            )
+        )
+        pygame.draw.rect(
+            window, self._colors.stopping_range_full.as_tuple(),
+            pygame.Rect(
+                light_x - stopping_distance, origin_y,
+                stopping_distance, self._get_road_height()
+            )
+        )
+        pygame.draw.rect(
+            window, self._colors.stopping_range_half.as_tuple(),
+            pygame.Rect(
+                light_x - stopping_distance//2, origin_y,
+                stopping_distance//2, self._get_road_height()
+            )
+        )
 
     def _get_canvas_origin(self) -> Tuple[int, int]:
         return (self._get_canvas_origin_left(), self._get_canvas_origin_top())

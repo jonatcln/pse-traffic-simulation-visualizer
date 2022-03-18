@@ -47,13 +47,13 @@ should look like:
       "name": "Arcade Street",
       "length": 500,
       "cars": [ {"x": 20}, {"x": 0} ],
-      "lights": [ {"x": 300, "green": 0} ]
+      "lights": [ {"x": 300, "green": 0, "xs": 50, "xs0", 15} ]
     },
     {
       "name": "Gold Avenue",
       "length": 400,
       "cars": [ {"x": 0} ],
-      "lights": [ {"x": 200, "green": 0} ]
+      "lights": [ {"x": 200, "green": 0, "xs": 50, "xs0": 15} ]
     }
   ]
 }
@@ -65,7 +65,9 @@ _The example is split over multiple lines for readability only._
 The `"time"` is the current frame's 'timestamp'. For now, it is only shown but
 has no further semantic value. The `"x"` in cars and traffic lights are their
 positions. And `"green"` tells the current color of a certain traffic light:
-`1` means green, `0` means red.
+`1` means green, `0` means red. `"xs"` is the deceleration distance and `"xs0"`
+is the stopping distance before the traffic light. Both `"xs"` and `"xs0"` are
+optional, but the other will be ignored if one of them is left out.
 
 ## License
 
