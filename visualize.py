@@ -135,6 +135,8 @@ class Visualizer:
     _DEFAULT_LIGHT_RADIUS: int = 5
     _DEFAULT_LIGHT_STOP_LINE_THICKNESS: int = 1
     _DEFAULT_ROAD_NAME_OFFSET: int = 3
+    _DEFAULT_PAUSE_ICON_WIDTH: int = 15
+    _DEFAULT_PAUSE_ICON_HEIGHT: int = 20
     _DEFAULT_FONT_FAMILY: str = 'DejaVu Sans'
     _DEFAULT_FONT_SIZE: int = 16
 
@@ -155,8 +157,12 @@ class Visualizer:
         self._colors: Visualizer.Colors = Visualizer.Colors()
         self._font_family: str = Visualizer._DEFAULT_FONT_FAMILY
         self._font_size: int = Visualizer._DEFAULT_FONT_SIZE
+        self._pause_icon_width: int = Visualizer._DEFAULT_PAUSE_ICON_WIDTH
+        self._pause_icon_height: int = Visualizer._DEFAULT_PAUSE_ICON_HEIGHT
         self._playback_rate: int = Visualizer._DEFAULT_PLAYBACK_RATE
         self._timeline = []
+        self._time_idx: int = 0
+        self._paused: bool = False
 
     def push_simulation_frame_data(self, data: str):
         parsed_data = ast.literal_eval(data)
@@ -170,7 +176,7 @@ class Visualizer:
         self._colors = colors
 
     def main_loop(self):
-        time_idx = 0
+        self._time_idx = 0
 
         pygame.init()
         fps_clock = pygame.time.Clock()
@@ -185,10 +191,16 @@ class Visualizer:
                     return
                 elif event.type == pygame.VIDEORESIZE:
                     self._window_width, self._window_height = event.size
+                elif event.type == pygame.KEYDOWN:
+                    self._handle_key_down(event.key)
 
-            if time_idx < len(self._timeline):
-                situation = self._timeline[time_idx]
-                time_idx += self._playback_rate
+            keys_pressed = pygame.key.get_pressed()
+            if keys_pressed:
+                self._handle_keys_pressed(keys_pressed)
+
+            situation = self._timeline[self._time_idx]
+            if not self._paused:
+                self._frames_forward(self._playback_rate)
 
             self._render_situation(window, situation)
 
@@ -196,9 +208,38 @@ class Visualizer:
 
             fps_clock.tick(self._fps)
 
+    def _handle_key_down(self, key):
+        if key == pygame.K_SPACE:
+            self._toggle_pause()
+        if key == pygame.K_r:
+            self._time_idx = 0
+
+    def _handle_keys_pressed(self, keys_pressed):
+        shift_pressed = keys_pressed[pygame.K_LSHIFT] or keys_pressed[pygame.K_RSHIFT]
+        if keys_pressed[pygame.K_LEFT]:
+            if self._paused:
+                self._frames_back(self._playback_rate if shift_pressed else 1)
+        if keys_pressed[pygame.K_RIGHT]:
+            if self._paused:
+                self._frames_forward(self._playback_rate if shift_pressed else 1)
+
+    def _toggle_pause(self):
+        self._paused = not self._paused
+
+    def _frames_back(self, n):
+        self._time_idx = max(0, self._time_idx - n)
+
+    def _frames_forward(self, n):
+        self._time_idx = self._time_idx + n
+        if self._time_idx >= len(self._timeline):
+            self._paused = True
+            self._time_idx = len(self._timeline) - 1
+
     def _render_situation(self, window, situation):
         self._draw_background(window)
         self._draw_time(window, situation['time'])
+        if self._paused:
+            self._draw_pause_icon(window)
 
         roads = situation['roads']
 
@@ -212,6 +253,23 @@ class Visualizer:
 
     def _draw_background(self, window):
         window.fill(self._colors.background.as_tuple())
+
+    def _draw_pause_icon(self, window):
+        width = self._pause_icon_width
+        height = self._pause_icon_height
+        origin_left = self._get_canvas_origin_left() \
+            + self._get_canvas_width() - width
+        origin_top = self._get_canvas_origin_top()
+        pygame.draw.rect(
+            window, self._colors.text.as_tuple(), pygame.Rect(
+                origin_left, origin_top, width, height
+            )
+        )
+        pygame.draw.rect(
+            window, self._colors.background.as_tuple(), pygame.Rect(
+                origin_left + width//3, origin_top, width - 2*width//3, height
+            )
+        )
 
     def _draw_full_road(
         self, window, road, road_y: int, horizontal_scale: float
