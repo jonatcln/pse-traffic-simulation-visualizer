@@ -47,6 +47,15 @@ optional arguments:
 Additional settings can be configured in the script (initial window dimensions,
 custom colors, etc.).
 
+## Controls
+
+- Press <kbd>space</kbd> to toggle play/pause
+- When paused, press (or hold down)
+  - <kbd>&#8592;</kbd> to step one frame backward
+  - <kbd>&#8594;</kbd> to step one frame forward
+- Hold <kbd>shift</kbd> while doing the above to step by the configured speed
+- Press <kbd>r</kbd> to reset the visualization to the first frame
+
 ## Data format
 
 The visualizer reads the data from stdin line by line, where each line should
