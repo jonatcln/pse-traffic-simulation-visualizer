@@ -70,13 +70,19 @@ should look like:
       "name": "Arcade Street",
       "length": 500,
       "cars": [ {"x": 20}, {"x": 0} ],
-      "lights": [ {"x": 300, "green": 0, "xs": 50, "xs0", 15} ]
+      "lights": [ {"x": 300, "green": 0, "xs": 50, "xs0": 15} ]
     },
     {
       "name": "Gold Avenue",
       "length": 400,
       "cars": [ {"x": 0} ],
       "lights": [ {"x": 200, "green": 0, "xs": 50, "xs0": 15} ]
+    },
+    {
+      "name": "13th street"
+      "length: 300,
+      "cars": [ {"x": 10, "type": "police_cruiser"} ]
+      "lights": [ {"x": 100, "green": 1, "xs": 50, "xs0": 15} ]
     }
   ]
 }
@@ -90,7 +96,7 @@ has no further semantic value. The `"x"` in cars and traffic lights are their
 positions. And `"green"` tells the current color of a certain traffic light:
 `1` means green, `0` means red. `"xs"` is the deceleration distance and `"xs0"`
 is the stopping distance before the traffic light. Both `"xs"` and `"xs0"` are
-optional, but the other will be ignored if one of them is left out.
+optional, but the other will be ignored if one of them is left out. The `"type"` is a string denoting the type of vehicle. If left out, a default of `"car"` is chosen. Possible types are: `"car"`, `"bus"`, `"ambulance"`, `"firetruck"` and `"police_cruiser"`. When given a type, the color of vehicle will change.
 
 ## License
 
