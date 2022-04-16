@@ -117,6 +117,10 @@ class Visualizer:
         text: Color = Color(0, 0, 0)
         road: Color = Color(200, 200, 200)
         car: Color = Color(40, 40, 40)
+        bus: Color = Color(0, 200, 0)
+        firetruck: Color = Color(255, 0, 0)
+        ambulance: Color = Color(150, 0, 0)
+        police_cruiser: Color = Color(0, 0, 255)
         traffic_light_green: Color = Color(0, 255, 0)
         traffic_light_red: Color = Color(255, 0, 0)
         generator: Color = Color(255, 100, 255)
@@ -288,8 +292,12 @@ class Visualizer:
             car_width = max(1, int(self._get_car_width() * horizontal_scale))
             car_x_offset = int(car['x'] * horizontal_scale) - car_width
             car_x = self._get_canvas_origin_left() + int(car_x_offset)
+            if 'type' in car:
+                car_type = car['type']
+            else:
+                car_type = 'car'
             self._draw_car(
-                window, car_x, road_y, car_width)
+                window, car_x, road_y, car_width, car_type)
 
     def _draw_traffic_lights(
         self, window, lights, road_y: int, horizontal_scale: float
@@ -341,11 +349,23 @@ class Visualizer:
         road_shape = pygame.Rect(origin_x, origin_y, width, road_height)
         pygame.draw.rect(window, self._colors.road.as_tuple(), road_shape)
 
-    def _draw_car(self, window, origin_x: int, center_y: int, width: int):
+    def _draw_car(self, window, origin_x: int, center_y: int, width: int, car_type: str):
         car_height = self._get_car_height()
         origin_y = center_y - car_height//2
         car_shape = pygame.Rect(origin_x, origin_y, width, car_height)
-        pygame.draw.rect(window, self._colors.car.as_tuple(), car_shape)
+        if car_type == "car":
+            car_color = self._colors.car.as_tuple()
+        elif car_type == "bus":
+            car_color = self._colors.bus.as_tuple()
+        elif car_type == "firetruck":
+            car_color = self._colors.firetruck.as_tuple()
+        elif car_type == "ambulance":
+            car_color = self._colors.ambulance.as_tuple()
+        elif car_type == "police_cruiser":
+            car_color = self._colors.police_cruiser.as_tuple()
+        else:
+            raise Exception(car_type + " is not a supported type of vehicle.")
+        pygame.draw.rect(window, car_color, car_shape)
 
     def _draw_traffic_light(
         self, window, center_x: int, road_center_y: int,
