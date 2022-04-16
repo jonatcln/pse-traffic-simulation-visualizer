@@ -96,7 +96,11 @@ has no further semantic value. The `"x"` in cars and traffic lights are their
 positions. And `"green"` tells the current color of a certain traffic light:
 `1` means green, `0` means red. `"xs"` is the deceleration distance and `"xs0"`
 is the stopping distance before the traffic light. Both `"xs"` and `"xs0"` are
-optional, but the other will be ignored if one of them is left out. The `"type"` is a string denoting the type of vehicle. If left out, a default of `"car"` is chosen. Possible types are: `"car"`, `"bus"`, `"ambulance"`, `"firetruck"` and `"police_cruiser"`. When given a type, the color of vehicle will change.
+optional, but the other will be ignored if one of them is left out. The
+`"type"` is a string denoting the type of vehicle. If left out, a default of
+`"car"` is chosen. Possible types are: `"car"`, `"bus"`, `"ambulance"`,
+`"firetruck"` and `"police_cruiser"`. When given a type, the color of vehicle
+will change
 
 ## License
 

@@ -17,7 +17,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from re import U
 from typing import NamedTuple, Tuple
 import sys
 import ast
